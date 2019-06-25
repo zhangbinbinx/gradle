@@ -1,6 +1,10 @@
 pluginManagement {
 	repositories {
-		gradlePluginPortal()
+		//gradlePluginPortal()
+		maven {//https://maven.aliyun.com/repository/gradle-plugin
+			url 'http://maven.aliyun.com/repository/gradle-plugin'
+		}
+		mavenCentral()
 	}
 }
 rootProject.name = 'demo4'

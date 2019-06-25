@@ -7,7 +7,7 @@ apply plugin: 'io.spring.dependency-management'
 
 group = 'com.me'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '1.8'
+sourceCompatibility = '1.9'
 
 repositories {
 	maven {
@@ -20,6 +20,6 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'io.netty:netty-all:4.1.10.Final'
-	implementation 'org.projectlombok:lombok'
+	compileOnly 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
