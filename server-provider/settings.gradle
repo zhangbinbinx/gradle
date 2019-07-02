@@ -1,0 +1,12 @@
+pluginManagement {
+    repositories {
+        //gradlePluginPortal()
+        maven {//https://maven.aliyun.com/repository/gradle-plugin
+            url 'http://maven.aliyun.com/repository/gradle-plugin'
+        }
+        //mavenCentral()
+        gradlePluginPortal()
+    }
+}
+rootProject.name = 'server-provider'
+
