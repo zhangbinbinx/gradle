@@ -1,6 +1,10 @@
 package com.me;
 
 import com.me.server.RpcRequest;
+import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.ChannelFuture;
+import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.GenericFutureListener;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -23,16 +27,25 @@ public class RpcNetTransport {
     }
 
     public Object send(RpcRequest rpcRequest){
-        Socket socket = null;
+        //Socket socket = null;
+        Bootstrap boostrap = null;
         Object result  = null;
         ObjectInputStream objectInputStream = null;
         ObjectOutputStream objectOutputStream = null;
         try{
-            socket = new Socket(host,port);
+            boostrap = new Bootstrap();
+            ChannelFuture channel = boostrap.connect(host, port);
+            channel.addListener(new GenericFutureListener<Future<? super Void>>() {
+                @Override
+                public void operationComplete(Future<? super Void> future) throws Exception {
+                    future.
+                }
+            });
+            /*socket = new Socket(host,port);
             objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
             objectOutputStream.writeObject(rpcRequest);
             objectOutputStream.flush();
-            objectInputStream = new ObjectInputStream(socket.getInputStream());
+            objectInputStream = new ObjectInputStream(socket.getInputStream());*/
             result = objectInputStream.readObject();
         }catch (Exception e){
             e.printStackTrace();
