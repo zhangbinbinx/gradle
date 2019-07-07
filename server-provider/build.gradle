@@ -18,6 +18,7 @@ repositories {
 dependencies {
     //compile project(':server-api')
     compile 'org.springframework:spring-context:4.3.13.RELEASE'
+    compile 'org.msgpack:msgpack:0.6.12'
     annotationProcessor 'org.projectlombok:lombok:1.18.8'
     implementation 'io.netty:netty-all:4.1.6.Final'
     compileOnly 'org.projectlombok:lombok:1.18.8'

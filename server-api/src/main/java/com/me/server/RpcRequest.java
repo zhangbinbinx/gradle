@@ -1,6 +1,7 @@
 package com.me.server;
 
 import lombok.Data;
+import org.msgpack.annotation.Message;
 
 import java.io.Serializable;
 
@@ -10,6 +11,7 @@ import java.io.Serializable;
  * @create: 2019-07-01 21:15
  **/
 @Data
+@Message
 public class RpcRequest implements Serializable {
     private String className;
     private String methodName;

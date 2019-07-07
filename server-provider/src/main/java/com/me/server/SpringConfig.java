@@ -12,8 +12,12 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ComponentScan("com.me.server")
 public class SpringConfig {
-    @Bean(name="rpcServer")
+    /*@Bean(name="rpcServer")
     public RpcServer rpcServer(){
         return new RpcServer(8080);
+    }*/
+@Bean(name="nioRpcServer")
+    public NIORpcServer nioRpcServer(){
+        return new NIORpcServer(8080);
     }
 }

@@ -19,7 +19,7 @@ import java.util.concurrent.Executors;
  * @author: zhangbinbin
  * @create: 2019-07-01 22:51
  **/
-@Component
+//@Component
 public class RpcServer implements ApplicationContextAware, InitializingBean {
     ExecutorService executorService = Executors.newCachedThreadPool();
     private Map<String,Object> handlerMap = new HashMap<String,Object>();
