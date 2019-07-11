@@ -11,6 +11,9 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.serialization.ClassResolvers;
+import io.netty.handler.codec.serialization.ObjectDecoder;
+import io.netty.handler.codec.serialization.ObjectEncoder;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 
@@ -25,10 +28,10 @@ import java.net.Socket;
  * @create: 2019-07-05 22:45
  **/
 
-public class NIORpcNetTransport {
+public class NIORpcNetTransport extends SimpleChannelInboundHandler<Object>{
     private int port;
     private String host;
-
+    private Object result;
     public NIORpcNetTransport(int port, String host) {
         this.port = port;
         this.host = host;
@@ -37,49 +40,35 @@ public class NIORpcNetTransport {
     public Object send(RpcRequest rpcRequest){
         EventLoopGroup group = new NioEventLoopGroup();
         Bootstrap boostrap = null;
-        final Object[] result = {};
         try{
             boostrap = new Bootstrap();
             boostrap.group(group).channel(NioSocketChannel.class).option(ChannelOption.SO_KEEPALIVE,true)
                     .handler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
-                            ch.pipeline().addLast(new SimpleChannelInboundHandler<Socket>() {
-                                @Override
-                                protected void channelRead0(ChannelHandlerContext ctx, Socket msg) throws Exception {
-                                    ObjectOutputStream objectOutputStream = new ObjectOutputStream(msg.getOutputStream());
-                                    objectOutputStream.writeObject(rpcRequest);
-                                    objectOutputStream.flush();
-                                    ObjectInputStream objectInputStream = new ObjectInputStream(msg.getInputStream());
-                                    result[0] = objectInputStream.readObject();
-                                    if(null != objectInputStream){
-                                        try {
-                                            objectInputStream.close();
-                                        } catch (IOException e) {
-                                            e.printStackTrace();
-                                        }
-                                    }
-                                    if(null != objectOutputStream){
-                                        try {
-                                            objectOutputStream.close();
-                                        } catch (IOException e) {
-                                            e.printStackTrace();
-                                        }
-                                    }
-                                }
-                            });
+                            ch.pipeline().addLast(new ObjectDecoder(Integer.MAX_VALUE, ClassResolvers.cacheDisabled(null))).
+                                    addLast(new ObjectEncoder()).
+                                    addLast(NIORpcNetTransport.this);
                         }
-                    });
+                    }).option(ChannelOption.TCP_NODELAY,true);
             ChannelFuture channelFuture = boostrap.connect(host, port).sync();
-            channelFuture.channel().closeFuture().sync();
+            channelFuture.channel().writeAndFlush(rpcRequest).sync();
+            if(null != rpcRequest){
+                channelFuture.channel().closeFuture().sync();
+            }
         }catch (Exception e){
             e.printStackTrace();
         }finally {
             group.shutdownGracefully();
-            return result[0];
+            return result;
         }
 
 
+    }
+
+    @Override
+    protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
+        this.result = msg;
     }
 }
 

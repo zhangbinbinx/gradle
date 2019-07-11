@@ -80,13 +80,14 @@ public class NIORpcServer implements ApplicationContextAware, InitializingBean {
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
+                            System.out.println("收到客户端消息，开始初始化服务端channel....");
                             //客户端编解码
                             //解码器
                             /** 解析自定义协议 */
-                            ch.pipeline().addLast(new Encoder());  //Outbound
+                           /* ch.pipeline().addLast(new Encoder());  //Outbound
                             ch.pipeline().addLast(new Decoder());  //Inbound
 
-                            ch.pipeline().addLast(new TerminalServerHandler());
+                            ch.pipeline().addLast(new TerminalServerHandler());*/
                            /* //解码器
                             ch.pipeline().addLast(new HttpResponseEncoder());
                             //编码
@@ -104,6 +105,9 @@ public class NIORpcServer implements ApplicationContextAware, InitializingBean {
                             ch.pipeline().addLast("decoder",new ObjectDecoder(Integer.MAX_VALUE, ClassResolvers.cacheDisabled(null)));
                             //数据解析处理
                             ch.pipeline().addLast(new ServerHandler());*/
+                            ch.pipeline().addLast(new ObjectDecoder(Integer.MAX_VALUE, ClassResolvers.cacheDisabled(null))).
+                                    addLast(new ObjectEncoder()).
+                                    addLast(new ProcessHandlerNew(handlerMap));
                         }
                     });
             ChannelFuture channelFuture = serverBootstrap.bind(port).sync();
@@ -135,131 +139,5 @@ public class NIORpcServer implements ApplicationContextAware, InitializingBean {
 
         }
     }
-    public class ServerHandler extends ChannelInboundHandlerAdapter {
 
-        @Override
-        public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-            Object result = new Object();
-            Channel client = ctx.channel();
-
-            //当客户端建立连接时，需要从自定义协议中获取信息，拿到具体的服务和实参
-            //使用反射调用
-           /* RpcRequest rpcRequest = (RpcRequest)msg;
-            String serviceName = rpcRequest.getClassName();
-            String version = rpcRequest.getVersion();
-            if(!StringUtils.isEmpty(version)){
-                serviceName += "-" + version;
-            }
-            Object service = handlerMap.get(serviceName);
-            if(null == service){
-                throw new RuntimeException("service is not fund:" + serviceName);
-            }
-            Object []args = rpcRequest.getParams();
-            Method method = null;
-            Class clazz = Class.forName(rpcRequest.getClassName());
-            if(null != args && args.length > 0){
-                Class<?> []types = new Class[args.length];
-                for (int i = 0; i < args.length; i++) {
-                    types[i] = args[i].getClass();
-                }
-                method = clazz.getMethod(rpcRequest.getMethodName(),types);
-            }else{
-                method = clazz.getMethod(rpcRequest.getMethodName());
-            }
-            result = method.invoke(service,args);
-            ctx.write(result);
-            ctx.flush();
-            ctx.close();*/
-        }
-    }
-    public class Decoder extends ByteToMessageDecoder {
-
-
-        @Override
-        protected void decode(ChannelHandlerContext ctx, ByteBuf in, List out) throws Exception {
-            try{
-                //先获取可读字节数
-                final int length = in.readableBytes();
-                final byte[] array = new byte[length];
-                String content = new String(array,in.readerIndex(),length);
-
-                //空消息不解析
-                if(!(null == content || "".equals(content.trim()))){
-                   /* if(!IMP.isIMP(content)){
-                        ctx.channel().pipeline().remove(this);
-                        return;
-                    }*/
-                    ctx.channel().pipeline().remove(this);
-                   return;
-                }
-
-                in.getBytes(in.readerIndex(), array, 0, length);
-                MessagePack messagePack = new MessagePack();
-                messagePack.register(RpcRequest.class);
-                out.add(messagePack.read(array,RpcRequest.class));
-                in.clear();
-              /*  System.out.println("ByteBuf可读字节数:" + in.readableBytes());
-                if (in.readableBytes() >= 8) {
-                    out.add(in.readLong());
-                }*/
-            }catch(MessageTypeException e){
-                System.out.println(e.getCause());
-                ctx.channel().pipeline().remove(this);
-            }
-        }
-    }
-    public class Encoder extends MessageToByteEncoder<RpcRequest>{
-
-        @Override
-        protected void encode(ChannelHandlerContext ctx, RpcRequest msg, ByteBuf out) throws Exception {
-            out.writeBytes(new MessagePack().write(msg));
-           // out.writeBytes(msg.toString().getBytes());
-        }
-    }
-    public class TerminalServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
-
-
-        @Override
-        protected void channelRead0(ChannelHandlerContext ctx, RpcRequest request) throws Exception {
-            if(request instanceof HttpRequest){
-                Object result = new Object();
-                //当客户端建立连接时，需要从自定义协议中获取信息，拿到具体的服务和实参
-                //使用反射调用
-                RpcRequest rpcRequest = request;
-                String serviceName = rpcRequest.getClassName();
-                String version = rpcRequest.getVersion();
-                if(!StringUtils.isEmpty(version)){
-                    serviceName += "-" + version;
-                }
-                Object service = handlerMap.get(serviceName);
-                if(null == service){
-                    throw new RuntimeException("service is not fund:" + serviceName);
-                }
-                Object []args = rpcRequest.getParams();
-                Method method = null;
-                Class clazz = Class.forName(rpcRequest.getClassName());
-                if(null != args && args.length > 0){
-                    Class<?> []types = new Class[args.length];
-                    for (int i = 0; i < args.length; i++) {
-                        types[i] = args[i].getClass();
-                    }
-                    method = clazz.getMethod(rpcRequest.getMethodName(),types);
-                }else{
-                    method = clazz.getMethod(rpcRequest.getMethodName());
-                }
-                result = method.invoke(service,args);
-                ctx.write(result);
-                ctx.flush();
-                ctx.close();
-            }
-
-        }
-
-        @Override
-        public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-            System.out.println("与客户端断开连接！");
-            super.exceptionCaught(ctx, cause);
-            ctx.close();
-        }
-    }
 }
