@@ -1,5 +1,7 @@
 package com.me.server;
 
+import com.me.zk.IServiceRegistry;
+import com.me.zk.ZKServiceRegistry;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
@@ -44,8 +46,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Method;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,7 +67,7 @@ public class NIORpcServer implements ApplicationContextAware, InitializingBean {
     ExecutorService executorService = Executors.newCachedThreadPool();
     private Map<String,Object> handlerMap = new HashMap<String,Object>();
     private Integer port;
-
+    private IServiceRegistry registry = new ZKServiceRegistry();
     public NIORpcServer(int port) {
         this.port = port;
     }
@@ -83,28 +87,6 @@ public class NIORpcServer implements ApplicationContextAware, InitializingBean {
                             System.out.println("收到客户端消息，开始初始化服务端channel....");
                             //客户端编解码
                             //解码器
-                            /** 解析自定义协议 */
-                           /* ch.pipeline().addLast(new Encoder());  //Outbound
-                            ch.pipeline().addLast(new Decoder());  //Inbound
-
-                            ch.pipeline().addLast(new TerminalServerHandler());*/
-                           /* //解码器
-                            ch.pipeline().addLast(new HttpResponseEncoder());
-                            //编码
-                            ch.pipeline().addLast(new HttpRequestDecoder());*/
-                            //ch.pipeline().addLast(new ServerHandler());
-                            /* ch.pipeline().addLast(new HttpResponseEncoder());
-                            //编码
-                            ch.pipeline().addLast(new HttpRequestDecoder());*/
-                            /*ch.pipeline().addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, 4, 0, 4));
-                            //自定义协议编码器
-                            ch.pipeline().addLast(new LengthFieldPrepender(4));
-                            //对象参数类型编码器
-                            ch.pipeline().addLast("encoder",new ObjectEncoder());
-                            //对象参数类型解码器
-                            ch.pipeline().addLast("decoder",new ObjectDecoder(Integer.MAX_VALUE, ClassResolvers.cacheDisabled(null)));
-                            //数据解析处理
-                            ch.pipeline().addLast(new ServerHandler());*/
                             ch.pipeline().addLast(new ObjectDecoder(Integer.MAX_VALUE, ClassResolvers.cacheDisabled(null))).
                                     addLast(new ObjectEncoder()).
                                     addLast(new ProcessHandlerNew(handlerMap));
@@ -134,10 +116,22 @@ public class NIORpcServer implements ApplicationContextAware, InitializingBean {
                 if(!StringUtils.isEmpty(version)){
                     serviceName+="-"+version;
                 }
+                //注册服务到注册中心
+                registry.registry(serviceName,getAddress() + ":" + port);
                 handlerMap.put(serviceName,serviceBean);
             }
 
         }
+    }
+    private static String getAddress(){
+        InetAddress inetAddress;
+        try {
+            inetAddress = InetAddress.getLocalHost();
+            return inetAddress.getHostAddress();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }

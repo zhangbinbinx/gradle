@@ -1,5 +1,6 @@
 package com.me;
 
+import com.me.discovery.ServiceDiscoveryWithZK;
 import com.me.server.RpcRequest;
 
 import java.lang.reflect.InvocationHandler;
@@ -29,7 +30,9 @@ public class RemoteInvocationHandler implements InvocationHandler {
         rpcRequest.setParams(args);
         rpcRequest.setVersion("1.0");
         //NIORpcNetTransport transport = new NIORpcNetTransport(port,host);
-       RpcNetTransport transport = new RpcNetTransport(port,host);
+       //RpcNetTransport transport = new RpcNetTransport(port,host);
+        String serviceAddress = new ServiceDiscoveryWithZK().discovery(method.getDeclaringClass().getName() + "-1.0");
+        NIORpcNetTransport transport = new NIORpcNetTransport(serviceAddress);
         Object result = transport.send(rpcRequest);
         return result;
     }

@@ -29,14 +29,19 @@ import java.net.Socket;
  **/
 
 public class NIORpcNetTransport extends SimpleChannelInboundHandler<Object>{
-    private int port;
-    private String host;
+
+    private String serviceAddress;
     private Object result;
+    /*private int port;
+    private String host;
     public NIORpcNetTransport(int port, String host) {
         this.port = port;
         this.host = host;
-    }
+    }*/
 
+    public NIORpcNetTransport(String serviceAddress) {
+        this.serviceAddress = serviceAddress;
+    }
     public Object send(RpcRequest rpcRequest){
         EventLoopGroup group = new NioEventLoopGroup();
         Bootstrap boostrap = null;
@@ -51,7 +56,8 @@ public class NIORpcNetTransport extends SimpleChannelInboundHandler<Object>{
                                     addLast(NIORpcNetTransport.this);
                         }
                     }).option(ChannelOption.TCP_NODELAY,true);
-            ChannelFuture channelFuture = boostrap.connect(host, port).sync();
+            String urls[]=serviceAddress.split(":");
+            ChannelFuture channelFuture = boostrap.connect(urls[0], Integer.parseInt(urls[1])).sync();
             channelFuture.channel().writeAndFlush(rpcRequest).sync();
             if(null != rpcRequest){
                 channelFuture.channel().closeFuture().sync();
