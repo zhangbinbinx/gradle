@@ -7,5 +7,5 @@ package com.me.zk;
  **/
 
 public class ZKConfig {
-    public static final String CONNECTION_STR="192.168.201.135:2181,192.168.201.137:2181,192.168.201.138:2181";
+    public static final String CONNECTION_STR="192.168.201.128:2181";
 }
