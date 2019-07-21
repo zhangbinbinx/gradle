@@ -14,11 +14,11 @@ public class IHelloServiceImpl implements IHelloService {
 
     }
 
-    @Override
+   /* @Override
     public String saveUser(User user) {
         System.out.println("保存用户信息成功！当前用户信息为\n" + user.toString() + "!");
         return "SUCCESS";
-    }
+    }*/
 
 
 }

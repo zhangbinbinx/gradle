@@ -23,4 +23,9 @@ dependencies {
     compile files('libs/server-1.0-SNAPSHOT.jar')
     compile 'org.apache.curator:curator-framework:4.0.0'
     compile 'org.apache.curator:curator-recipes:4.0.0'
+    compile 'org.apache.curator:curator-framework:4.0.0'
+    compile 'org.apache.curator:curator-recipes:4.0.0'
+    compile 'org.apache.tomcat:tomcat-catalina:9.0.22'
+    compile 'org.eclipse.jetty:jetty-server:10.0.0-alpha0'
+    compile 'org.apache.dubbo:dubbo:2.7.2'
 }

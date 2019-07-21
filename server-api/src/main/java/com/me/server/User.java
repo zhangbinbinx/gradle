@@ -2,13 +2,15 @@ package com.me.server;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * @description:
  * @author: zhangbinbin
  * @create: 2019-07-01 21:06
  **/
 @Data
-public class User {
+public class User implements Serializable {
     private String name;
     private int age;
 

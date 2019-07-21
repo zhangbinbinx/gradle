@@ -16,18 +16,29 @@ repositories {
 }
 
 dependencies {
+    compile files('libs/server-1.0-SNAPSHOT.jar')
     //compile project(':server-api')
-    compile 'org.springframework:spring-context:4.3.13.RELEASE'
+    //compile 'org.springframework:spring-context:4.3.13.RELEASE'
     compile 'org.msgpack:msgpack:0.6.12'
     annotationProcessor 'org.projectlombok:lombok:1.18.8'
-    implementation 'io.netty:netty-all:4.1.6.Final'
+    //implementation 'io.netty:netty-all:4.1.6.Final'
     compileOnly 'org.projectlombok:lombok:1.18.8'
     testCompile group: 'junit', name: 'junit', version: '4.12'
-    compile 'org.apache.curator:curator-framework:4.0.0'
-    compile 'org.apache.curator:curator-recipes:4.0.0'
+    compileOnly 'org.apache.dubbo:dubbo:2.7.2'
+    compileOnly 'org.slf4j:slf4j-api:1.7.26'
+    compileOnly 'ch.qos.logback:logback-classic:1.2.3'
+    compileOnly 'org.apache.curator:curator-framework:4.0.0'
+    compileOnly 'org.apache.curator:curator-recipes:4.0.0'
+    compileOnly 'org.apache.cxf:cxf-rt-frontend-simple:3.3.2'
+    compileOnly 'org.apache.cxf:cxf-rt-transports-http:3.3.2'
+    //implementation 'org.apache.tomcat:tomcat-catalina:9.0.22'
+    compileOnly 'org.eclipse.jetty:jetty-server:9.4.19.v20190610'
+    compileOnly 'org.eclipse.jetty:jetty-servlet:9.4.19.v20190610'
+
+
     //compile 'com.me.server:server:1.0'
     //compile fileTree(dir:'lib',include:['*.jar'])
-    compile files('libs/server-1.0-SNAPSHOT.jar')
+
 }
 task createDirs(){
     sourceSets*.java.srcDirs*.each{it.mkdirs()}

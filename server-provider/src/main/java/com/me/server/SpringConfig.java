@@ -9,14 +9,14 @@ import org.springframework.context.annotation.Configuration;
  * @author: zhangbinbin
  * @create: 2019-07-01 22:48
  **/
-@Configuration
-@ComponentScan("com.me.server")
+/*@Configuration
+@ComponentScan("com.me.server")*/
 public class SpringConfig {
     /*@Bean(name="rpcServer")
     public RpcServer rpcServer(){
         return new RpcServer(8080);
     }*/
-@Bean(name="nioRpcServer")
+//@Bean(name="nioRpcServer")
     public NIORpcServer nioRpcServer(){
         return new NIORpcServer(8080);
     }

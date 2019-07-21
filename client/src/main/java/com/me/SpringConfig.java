@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Bean;
  **/
 
 public class SpringConfig {
-    @Bean(name="rpcProxyClient")
+   // @Bean(name="rpcProxyClient")
     public RpcProxyClient proxyClient(){
         return new RpcProxyClient();
     }

@@ -61,7 +61,7 @@ import java.util.concurrent.Executors;
  * @author: zhangbinbin
  * @create: 2019-07-01 22:51
  **/
-@Component(value = "nioRpcServer")
+//@Component(value = "nioRpcServer")
 @Data
 public class NIORpcServer implements ApplicationContextAware, InitializingBean {
     ExecutorService executorService = Executors.newCachedThreadPool();

@@ -6,5 +6,5 @@ package com.me.server;
 public interface IHelloService {
     String sayHello(String content);
 
-   String saveUser(User user);
+  // String saveUser(User user);
 }
