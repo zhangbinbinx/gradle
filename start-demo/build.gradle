@@ -10,13 +10,21 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
 
 repositories {
+    
     maven {
         url 'http://maven.aliyun.com/nexus/content/groups/public/'
+        
+    }
+    maven{
+        url 'F:\\softwair\\maven'
     }
     mavenCentral()
+    jcenter()
 }
 
 dependencies {
+    implementation 'com.me.springboot-starter:demo:0.0.1-SNAPSHOT'  exclude group: 'com.alibaba'
+    
     implementation 'org.springframework.boot:spring-boot-starter-web'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }

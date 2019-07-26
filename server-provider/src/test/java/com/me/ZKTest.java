@@ -20,7 +20,7 @@ import java.io.IOException;
  **/
 
 public class ZKTest {
-    static final String connectionStr = "192.168.201.135:2181";
+    static final String connectionStr = "192.168.201.128:2181";
     @Test
     public void test() throws Exception {
 
@@ -28,7 +28,7 @@ public class ZKTest {
                 .retryPolicy(new ExponentialBackoffRetry(1000,3)).build();
         curatorFramework.start();
         //Thread.sleep(5000);
-        curatorFramework.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath("/node2");
+       // curatorFramework.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath("/node2");
         //  GetDataBuilder data = curatorFramework.getData();
         System.out.println("");
        /* ZooKeeper zk = new ZooKeeper("192.168.201.135:2555", 5000, new Watcher() {
